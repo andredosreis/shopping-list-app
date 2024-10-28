@@ -1,0 +1,121 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding:0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header{
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    
+}
+
+main{
+    padding: 20px;
+}
+
+section{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+input{
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+/* Fade in when item is added */
+ul{
+    list-style: none;
+    padding: 0;
+}
+li{
+    padding: 10px;
+    background-color: white;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+li{
+    opacity: 0;
+    transform: translate(-10px);
+    animation: fadeIn 0.8s forwards;
+}
+
+@keyframes fadeIn {
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+}
+
+li.fadeOut{
+    opacity: 1;
+    animation: fadeOut 30s forwards;
+}
+li.fedeOut{
+    background-color: red;
+}
+
+@keyframes fadeOut{
+    to{
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Style for the remove button */
+button.deleteItem{
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button.deleteItem:hover{
+    background-color: #ff1a1a;
+}
+
+/* Input abd button styling*/
+
+input{
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+}
+
+
+button{
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #45a049;
+}
+
