@@ -36,8 +36,9 @@ This is a Shopping List application, built with **Node.js** and **Express**, tha
 
 ## Usage
  1. **Start the server in development mode:**
-  ```bash
-npm run dev
+  ``bash
+npm run dev``
+
 
 The server will run at http://localhost:3002.
 
