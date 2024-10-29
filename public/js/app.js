@@ -9,22 +9,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let items = JSON.parse(localStorage.getItem("shoppingList")) || [];
     let purchasedItems = JSON.parse(localStorage.getItem("purchasedList")) || [];
+    let editingIndex = null; // Index of item being edited in shopping list
+    let editingPurchasedIndex = null; // Index of item being edited in purchased list
 
     // Render items in the shopping list and purchased list
     const renderItems = () => {
-        // Render items in shopping list
         shoppingList.innerHTML = "";
         items.forEach((item, index) => {
             const li = document.createElement("li");
-            li.innerHTML = `${item} <span class="remove-item" data-index="${index}">Remove</span> <span class="mark-purchased" data-index="${index}">Mark as Purchased</span>`;
+            li.innerHTML = `
+                ${item}
+                <span class="remove-item" data-index="${index}">Remove</span>
+                <span class="mark-purchased" data-index="${index}">Mark as Purchased</span>
+                <span class="edit-item" data-index="${index}">Edit</span>
+            `;
             shoppingList.appendChild(li);
         });
 
-        // Render items in purchased list
         purchasedList.innerHTML = "";
-        purchasedItems.forEach((item) => {
+        purchasedItems.forEach((item, index) => {
             const li = document.createElement("li");
-            li.textContent = item;
+            li.innerHTML = `
+                ${item}
+                <span class="edit-purchased-item" data-index="${index}">Edit</span>
+                <span class="move-back" data-index="${index}">Move Back</span>
+            `;
             li.classList.add("purchased-item");
             purchasedList.appendChild(li);
         });
@@ -38,10 +47,18 @@ document.addEventListener("DOMContentLoaded", () => {
         renderItems();
     };
 
-    // Add new item to the shopping list
+    // Add a new item or update an edited item
     const addItem = (item) => {
         if (item) {
-            items.push(item);
+            if (editingIndex !== null) {
+                items[editingIndex] = item;
+                editingIndex = null;
+            } else if (editingPurchasedIndex !== null) {
+                purchasedItems[editingPurchasedIndex] = item;
+                editingPurchasedIndex = null;
+            } else {
+                items.push(item);
+            }
             itemInput.value = "";
             updateLocalStorage();
             renderItems();
@@ -61,15 +78,48 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("purchasedList", JSON.stringify(purchasedItems));
     };
 
+    // Edit an item in the shopping list
+    const editItem = (index) => {
+        itemInput.value = items[index];
+        editingIndex = index;
+    };
+
+    // Edit an item in the purchased list
+    const editPurchasedItem = (index) => {
+        itemInput.value = purchasedItems[index];
+        editingPurchasedIndex = index;
+    };
+
+    // Move an item back from purchased list to shopping list
+    const moveBackToShoppingList = (index) => {
+        const item = purchasedItems.splice(index, 1)[0];
+        items.push(item);
+        updateLocalStorage();
+        renderItems();
+    };
+
     // Event listener for shopping list actions
     shoppingList.addEventListener("click", (e) => {
         if (e.target.classList.contains("remove-item")) {
             const index = e.target.getAttribute("data-index");
             removeItem(index);
-        }
-        if (e.target.classList.contains("mark-purchased")) {
+        } else if (e.target.classList.contains("mark-purchased")) {
             const index = e.target.getAttribute("data-index");
             markAsPurchased(index);
+        } else if (e.target.classList.contains("edit-item")) {
+            const index = e.target.getAttribute("data-index");
+            editItem(index);
+        }
+    });
+
+    // Event listener for purchased list actions
+    purchasedList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("edit-purchased-item")) {
+            const index = e.target.getAttribute("data-index");
+            editPurchasedItem(index);
+        } else if (e.target.classList.contains("move-back")) {
+            const index = e.target.getAttribute("data-index");
+            moveBackToShoppingList(index);
         }
     });
 
@@ -96,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         suggestions.forEach(suggestion => {
             const suggestionItem = document.createElement("li");
             suggestionItem.classList.add("suggestion-item");
-            
+
             // Add product image
             if (suggestion.imageUrl) {
                 const image = document.createElement("img");
@@ -110,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const productName = document.createElement("span");
             productName.textContent = suggestion.name;
             suggestionItem.appendChild(productName);
-            
+
             suggestionsBox.appendChild(suggestionItem);
 
             // Add item when a suggestion is clicked
