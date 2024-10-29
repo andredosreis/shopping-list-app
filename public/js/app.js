@@ -5,18 +5,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestionsBox = document.createElement("ul");
     suggestionsBox.id = "suggestions";
     document.querySelector(".input-section").appendChild(suggestionsBox);
+    const purchasedList = document.getElementById("purchasedList");
 
     let items = JSON.parse(localStorage.getItem("shoppingList")) || [];
+    let purchasedItems = JSON.parse(localStorage.getItem("purchasedList")) || [];
 
+    // Render items in the shopping list and purchased list
     const renderItems = () => {
+        // Render items in shopping list
         shoppingList.innerHTML = "";
         items.forEach((item, index) => {
             const li = document.createElement("li");
-            li.innerHTML = `${item} <span class="remove-item" data-index="${index}">Remove</span>`;
+            li.innerHTML = `${item} <span class="remove-item" data-index="${index}">Remove</span> <span class="mark-purchased" data-index="${index}">Mark as Purchased</span>`;
             shoppingList.appendChild(li);
+        });
+
+        // Render items in purchased list
+        purchasedList.innerHTML = "";
+        purchasedItems.forEach((item) => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            li.classList.add("purchased-item");
+            purchasedList.appendChild(li);
         });
     };
 
+    // Mark an item as purchased and move it to the purchased list
+    const markAsPurchased = (index) => {
+        const item = items.splice(index, 1)[0];
+        purchasedItems.push(item);
+        updateLocalStorage();
+        renderItems();
+    };
+
+    // Add new item to the shopping list
     const addItem = (item) => {
         if (item) {
             items.push(item);
@@ -26,17 +48,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // Remove an item from the shopping list
     const removeItem = (index) => {
         items.splice(index, 1);
         updateLocalStorage();
         renderItems();
     };
 
+    // Update local storage with the current lists
     const updateLocalStorage = () => {
         localStorage.setItem("shoppingList", JSON.stringify(items));
+        localStorage.setItem("purchasedList", JSON.stringify(purchasedItems));
     };
 
-    // Função para buscar produtos da API
+    // Event listener for shopping list actions
+    shoppingList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("remove-item")) {
+            const index = e.target.getAttribute("data-index");
+            removeItem(index);
+        }
+        if (e.target.classList.contains("mark-purchased")) {
+            const index = e.target.getAttribute("data-index");
+            markAsPurchased(index);
+        }
+    });
+
+    // Fetch product suggestions from the API based on query
     const fetchSuggestions = async (query) => {
         try {
             const response = await fetch(`/search?q=${query}`);
@@ -52,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Mostrar sugestões na interface
+    // Display product suggestions in the interface
     const showSuggestions = async (query) => {
         const suggestions = await fetchSuggestions(query);
         suggestionsBox.innerHTML = "";
@@ -60,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const suggestionItem = document.createElement("li");
             suggestionItem.classList.add("suggestion-item");
             
-            // add image of the product
+            // Add product image
             if (suggestion.imageUrl) {
                 const image = document.createElement("img");
                 image.src = suggestion.imageUrl;
@@ -68,14 +105,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 image.classList.add("product-image");
                 suggestionItem.appendChild(image);
             }
-            
-            // add name product
-            const productName = document.createTextNode(suggestion.name);
+
+            // Add product name
+            const productName = document.createElement("span");
+            productName.textContent = suggestion.name;
             suggestionItem.appendChild(productName);
             
             suggestionsBox.appendChild(suggestionItem);
-    
-            // Add item to click in the sugestion
+
+            // Add item when a suggestion is clicked
             suggestionItem.addEventListener("click", () => {
                 addItem(suggestion.name);
                 suggestionsBox.innerHTML = "";
@@ -83,15 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Event Listeners
+    // Event listeners for adding and managing items
     addItemButton.addEventListener("click", () => addItem(itemInput.value));
-
-    shoppingList.addEventListener("click", (e) => {
-        if (e.target.classList.contains("remove-item")) {
-            const index = e.target.getAttribute("data-index");
-            removeItem(index);
-        }
-    });
 
     itemInput.addEventListener("input", (e) => {
         const query = e.target.value.trim();

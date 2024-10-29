@@ -178,3 +178,13 @@ button:hover{
     object-fit: cover;
     border-radius: 5px;
 }
+.suggestion-item span{
+    font-size: 1rem;
+    color: #333;
+}
+
+/*purchased-item*/
+.purchased-item {
+    text-decoration: line-through;
+    color: gray;
+}
