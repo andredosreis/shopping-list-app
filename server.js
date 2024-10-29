@@ -17,7 +17,7 @@ app.get('/search', async (req, res) => {
 
     try {
         // Fazer a requisição à API OpenFoodFacts (ou outra API)
-        const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${query}.json`);
+        const response = await axios.get(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&json=1`);
 
         // Processar dados da API, buscando apenas informações essenciais
         const products = response.data.products.map(product => ({
@@ -34,7 +34,7 @@ app.get('/search', async (req, res) => {
 });
 
 // Iniciar o servidor na porta 3000 ou variável de ambiente PORT
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });

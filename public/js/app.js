@@ -39,9 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função para buscar produtos da API
     const fetchSuggestions = async (query) => {
         try {
-            const response = await fetch(`/api/search?q=${query}`);
+            const response = await fetch(`/search?q=${query}`);
             const products = await response.json();
-            return products.map(product => product.product_name);
+            return products.map(product => ({
+                name: product.name,
+                brand: product.brand,
+                imageUrl: product.imageUrl
+            }));
         } catch (error) {
             console.error("Error fetching suggestions:", error);
             return [];
@@ -54,13 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
         suggestionsBox.innerHTML = "";
         suggestions.forEach(suggestion => {
             const suggestionItem = document.createElement("li");
-            suggestionItem.textContent = suggestion;
             suggestionItem.classList.add("suggestion-item");
+            
+            // add image of the product
+            if (suggestion.imageUrl) {
+                const image = document.createElement("img");
+                image.src = suggestion.imageUrl;
+                image.alt = suggestion.name;
+                image.classList.add("product-image");
+                suggestionItem.appendChild(image);
+            }
+            
+            // add name product
+            const productName = document.createTextNode(suggestion.name);
+            suggestionItem.appendChild(productName);
+            
             suggestionsBox.appendChild(suggestionItem);
-
-            // Adicionar item ao clicar em uma sugestão
+    
+            // Add item to click in the sugestion
             suggestionItem.addEventListener("click", () => {
-                addItem(suggestion);
+                addItem(suggestion.name);
                 suggestionsBox.innerHTML = "";
             });
         });
