@@ -126,13 +126,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch product suggestions from the API based on query
     const fetchSuggestions = async (query) => {
         try {
-            const response = await fetch(`/search?q=${query}`);
-            const products = await response.json();
-            return products.map(product => ({
-                name: product.name,
-                brand: product.brand,
-                imageUrl: product.imageUrl
-            }));
+            const response = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&json=1`);
+            const data = await response.json();
+            
+            // Verifica se há produtos na resposta da API
+            if (data.products && data.products.length > 0) {
+                return data.products.map(product => ({
+                    name: product.product_name,
+                    brand: product.brands,
+                    imageUrl: product.image_url
+                }));
+            }
+            return [];
         } catch (error) {
             console.error("Error fetching suggestions:", error);
             return [];
