@@ -40,11 +40,11 @@ This is a Shopping List application, built with **Node.js** and **Express**, tha
 npm run dev``
 
 
-The server will run at http://localhost:3002.
+The server will run at http://localhost:3000.
 
 2. **Open the application:**
 
-Open your browser and navigate to http://localhost:3002.
+Open your browser and navigate to http://localhost:3000.
 
 ## Available Scripts
 
